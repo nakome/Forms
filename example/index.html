@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form demo</title>
+  <style rel="stylesheet">
+    form input,
+    form select,
+    form textarea,
+    form fieldset,
+    form optgroup,
+    form label,
+    .StripeElement {
+      font-family: inherit;
+      font-size: 100%;
+      color: inherit;
+      border: 0;
+      border-radius: 0;
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      -webkit-appearance: none;
+      -moz-appearance: none
+    }
+
+    form label,
+    form legend {
+      font-size: .825rem;
+      margin-bottom: .5rem
+    }
+
+    form input,
+    form select,
+    form textarea,
+    .StripeElement {
+      box-sizing: border-box;
+      border: 1px solid rgba(0, 0, 0, .2);
+      background-color: rgba(255, 255, 255, .9);
+      padding: .75em 1rem;
+      margin-bottom: 1.5rem
+    }
+
+    form input:focus,
+    form select:focus,
+    form textarea:focus,
+    .StripeElement:focus {
+      background-color: #fff;
+      outline-style: solid;
+      outline-width: thin;
+      outline-color: gray;
+      outline-offset: -1px
+    }
+
+    form [type=text],
+    form [type=email],
+    .StripeElement {
+      width: 100%
+    }
+
+    form [type=button],
+    form [type=submit],
+    form [type=reset] {
+      width: auto;
+      cursor: pointer;
+      -webkit-appearance: button;
+      -moz-appearance: button;
+      appearance: button
+    }
+
+    form [type=button]:focus,
+    form [type=submit]:focus,
+    form [type=reset]:focus {
+      outline: 0
+    }
+
+    form select {
+      text-transform: none
+    }
+  </style>
+</head>
+
+<body style="width:min(380px,600px);margin:2rem auto">
+  <form action="http://localhost/Forms/" method="post">
+    <input type="hidden" name="email_to" value="demo@gmail" />
+    <input type="hidden" name="token" value="demo123" />
+    <input type="hidden" name="success_page" value="http://localhost/Forms/success.html" />
+    <input type="hidden" name="error_page" value="http://localhost/Forms/error.html" />
+    <input type="hidden" name="subject" id="f-subject" value="Formulario contacto de departamento">
+    <fieldset>
+      <label for="f-name">Nombre Completo</label>
+      <input type="text" name="name" id="f-name" placeholder="Su nombre" required="">
+      <label for="f-email">Correo electrónico</label>
+      <input type="email" name="email_from" id="f-email" placeholder="email@demo.com" required="">
+      <label for="_department">Departamento</label>
+      <select name="department" id="f-select" required="" title="Selecionar departamento">
+        <option value="" selected="" disabled="">Selecionar</option>
+        <option value="Departamento 1">Departamento 1</option>
+        <option value="Departamento 2">Departamento 2</option>
+        <option value="Departamento 3">Departamento 3</option>
+        <option value="Departamento 4">Departamento 4</option>
+      </select>
+      <label for="message">Message</label>
+      <textarea rows="5" name="message" id="f-message"
+        placeholder="Puede preguntar lo que necesite, estaremos encantados de responderle" required=""></textarea>
+    </fieldset>
+    <input type="submit" value="Enviar correo">
+  </form>
+  <script rel="javascript">
+    // cuando el dom este listo (Esto solo funciona en desktop)
+    document.onreadystatechange = () => {
+      if (document.readyState === "complete") {
+        // escuchamos los eventos
+        listen(document.getElementById("f-name"), "Escriba su nombre para saber a quien nos dirijirnos");
+        listen(document.getElementById("f-email"), "Necesitamos que nos proporcione un correo valido");
+        listen(document.getElementById("f-subject"), "Necesitamos que nos proporcione asunto valido");
+        listen(document.getElementById("f-message"), "Necesitamos que nos proporcione un mensaje");
+        listen(document.getElementById("f-select"), "Necesitamos que nos proporcione un departamento");
+      }
+    };
+    // function para escuchar eventos invalid y input
+    function listen(uid, txt) {
+      uid.addEventListener("invalid", (evt) => isInValidInput(evt, txt));
+      uid.addEventListener("input", (evt) => isValidInput(evt));
+    }
+    // No es valido
+    function isInValidInput(evt, txt) {
+      evt.target.className = "is-invalid form-control";
+      evt.target.setCustomValidity(txt);
+    }
+    // Es valido
+    function isValidInput(evt) {
+      evt.target.className = "form-control";
+      evt.target.setCustomValidity("");
+    }
+  </script>
+
+</body>
+
+</html>
