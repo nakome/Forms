@@ -4,21 +4,21 @@ Archivo para enviar correos básico con la función mail
 
 ## Configuración
 
-```Php
-$opts = [
-    // Solo permite estas urls
-    'allow_urls' => ['localhost', 'example.com'], // Urls sin http o https
-    // Token para comprobar como si fuera una contraseña no como un bearer token por defecto es demo123
-    'token' => '$2y$10$n5xO5I4XTPt.WZaSGI0x5OEZQoDoBU2dDYrAq8yLXBsb512KfnP2G',
-];
-```
+    $opts = [
+        // Solo permite estas urls
+        'allow_urls' => ['localhost', 'example.com'], // Urls sin http o https
+        // Token para comprobar como si fuera una contraseña no como un bearer token por defecto es demo123
+        'token' => '$2y$10$n5xO5I4XTPt.WZaSGI0x5OEZQoDoBU2dDYrAq8yLXBsb512KfnP2G',
+    ];
 
-```Html
-   <form action="http://localhost/forms/" method="post">
-     <input type="hidden" name="email_to" value="tu@email.com"/>
+
+## Plantilla de ejemplo
+
+    <form action="[Url donde se encuentra el archivo por ejemplo http://localhost/forms/]" method="post">
+     <input type="hidden" name="email_to" value="[Su correo electronico]"/>
      <input type="hidden" name="token" value="[clave token]"/>
-     <input type="hidden" name="success_page" value="sucess.html"/>
-     <input type="hidden" name="error_page" value="error.html"/>
+     <input type="hidden" name="success_page" value="[Página de redirecion de correo enviado]"/>
+     <input type="hidden" name="error_page" value="[Página de error del correo]"/>
      <input type="hidden" name="subject" id="f-subject" value="Asunto">
      <fieldset>
        <label for="f-name">Nombre Completo</label>
@@ -37,5 +37,5 @@ $opts = [
        <textarea rows="5" name="message" id="f-message" placeholder="Puede preguntar lo que necesite, estaremos encantados de responderle" required=""></textarea>
      </fieldset>
      <input type="submit" value="Enviar correo">
-   </form>
- ´´´
+    </form>
+
