@@ -234,6 +234,7 @@ $opts = [
     // Solo permite estas urls
     'allow_urls' => ['localhost'],
     // Token para comprobar como si fuera una contraseña no como un bearer token
+    // password_hash('demo123',PASSWORD_BCRYPT)
     'token' => '$2y$10$n5xO5I4XTPt.WZaSGI0x5OEZQoDoBU2dDYrAq8yLXBsb512KfnP2G', // por defecto es demo123
 ];
 // Iniciamos la clase con las opciones
