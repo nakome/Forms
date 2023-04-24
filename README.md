@@ -16,7 +16,7 @@ Archivo para enviar correos básico con la función mail
 
     <form action="[Url donde se encuentra el archivo por ejemplo http://localhost/forms/]" method="post">
      <input type="hidden" name="email_to" value="[Su correo electronico]"/>
-     <input type="hidden" name="token" value="[clave token]"/>
+     <input type="hidden" name="token" value="[clave token por defecto es demo123]"/>
      <input type="hidden" name="success_page" value="[Página de redirecion de correo enviado]"/>
      <input type="hidden" name="error_page" value="[Página de error del correo]"/>
      <input type="hidden" name="subject" id="f-subject" value="Asunto">
