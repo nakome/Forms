@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form demo</title>
+  <style rel="stylesheet">
+    form {
+      --input-bg-color: rgba(255, 255, 255, .9);
+      --input-border-color: rgba(17, 17, 17, 0.2);
+      --input-bg-focus-color: rgb(255, 255, 255);
+      --input-outline-color: rgb(128, 128, 128);
+      --input-danger-bg-color: rgb(54, 92, 219);
+      --input-danger-border-color: rgb(23, 35, 190);
+      --input-danger-txt-color: rgb(255, 255, 255);
+
+      font-family: Roboto,-apple-system,"Segoe UI";
+      line-height: 1;
+      font-size: 14px;    
+    }
+    form fieldset,form input,form label,form optgroup,form select,form textarea{font-family:inherit;font-size:100%;color:inherit;border:0;border-radius:0;display:block;width:100%;padding:0;margin:0;-webkit-appearance:none;-moz-appearance:none;appearance:none}
+    form label,form legend{font-size:.825rem;margin-bottom:.5rem}
+    form input,form select,form textarea{box-sizing:border-box;border:1px solid var(--input-border-color);background-color:var(--input-bg-color);padding:.75em 1rem;margin-bottom:1.5rem}
+    form input:focus,form select:focus,form textarea:focus{background-color:var(--input-bg-focus-color);outline-style:solid;outline-width:thin;outline-color:var(--input-outline-color);outline-offset:-1px}
+    form [type=email],form [type=text]{width:100%}
+    form [type=button],form [type=reset],form [type=submit]{width:auto;cursor:pointer;-webkit-appearance:button;-moz-appearance:button;appearance:button}
+    form [type=button]:is(:hover,:focus),form [type=reset]:is(:hover,:focus),form [type=submit]:is(:hover,:focus){outline:0;opacity:.5;transition:all .5s ease}
+    form select{text-transform:none}
+    [disabled]{opacity:.5}
+  </style>
+</head>
+
+<body style="width:min(380px,600px);margin:2rem auto">
+  <div class="message"></div>
+  <form action="http://localhost/Forms/" method="post">
+    <input type="hidden" name="token" value="demo123e" />
+    <input type="hidden" name="success_page" value="http://localhost/Forms/example/success.html" />
+    <input type="hidden" name="error_page" value="http://localhost/Forms/example/error.html" />
+    <input type="hidden" name="subject" id="f-subject" value="Formulario contacto de departamento">
+    <fieldset>
+      <label for="f-name">Nombre Completo</label>
+      <input type="text" name="name" id="f-name" placeholder="Su nombre" required="">
+      <label for="f-email">Correo electrónico</label>
+      <input type="email" name="email_from" id="f-email" placeholder="email@demo.com" required="">
+      <label for="_department">Departamento</label>
+      <select name="department" id="f-select" required="" title="Selecionar departamento">
+        <option value="" selected="" disabled="">Selecionar</option>
+        <option value="Departamento 1">Departamento 1</option>
+        <option value="Departamento 2">Departamento 2</option>
+        <option value="Departamento 3">Departamento 3</option>
+        <option value="Departamento 4">Departamento 4</option>
+      </select>
+      <label for="message">Message</label>
+      <textarea rows="5" name="message" id="f-message"
+        placeholder="Puede preguntar lo que necesite, estaremos encantados de responderle" required=""></textarea>
+    </fieldset>
+    <input type="submit" value="Enviar correo">
+  </form>
+</body>
+
+</html>

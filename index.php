@@ -33,7 +33,7 @@ if (DEBUG == true) {
  * Clase Forms: maneja la validación y el envío de formularios de contacto.
  *
  * Primero, se define un array $options que contiene dos claves:
- *
+ * 'email': el correo electrónico donde se enviaran los correos.
  * 'allow_urls': un array de URLs permitidas para enviar formularios.
  * 'token': una contraseña para validar el envío del formulario.
  * Luego, se crea un objeto Forms pasando como argumento el array $opts. Si el método de solicitud es POST,
@@ -48,35 +48,6 @@ if (DEBUG == true) {
  * Si el correo electrónico no se pudo enviar debido a una contraseña inválida, se muestra un mensaje de error.
  * En caso contrario, si el método de solicitud no es POST, se muestra un mensaje de error indicando que el envío de formularios es necesario tener las credenciales para usarlo.
  *
- * En resumen, este código crea un objeto Forms que valida el envío de formularios y envía correos electrónicos con los valores ingresados en el formulario.
- *
- *  Plantilla html:
- *  <form action="http://localhost/forms/" method="post">
- *
- *    <input type="hidden" name="email_to" value="tu@email.com"/>
- *    <input type="hidden" name="token" value="[clave token por defecto es demo123]"/>
- *    <input type="hidden" name="success_page" value="success.html"/>
- *    <input type="hidden" name="error_page" value="error.html"/>
- *    <input type="hidden" name="subject" id="f-subject" value="Asunto">
-
- *    <fieldset>
- *      <label for="f-name">Nombre Completo</label>
- *      <input type="text" name="name" id="f-name" placeholder="Su nombre" required="">
- *      <label for="f-email">Correo electrónico</label>
- *      <input type="email" name="email_from" id="f-email" placeholder="email@demo.com" required="">
- *      <label for="_department">Departamento</label>
- *      <select name="department" id="f-select" required="">
- *        <option value="" selected="" disabled="">Selecionar</option>
- *        <option value="Departamento 1">Departamento 1</option>
- *        <option value="Departamento 2">Departamento 2</option>
- *        <option value="Departamento 3">Departamento 3</option>
- *        <option value="Departamento 4">Departamento 4</option>
- *      </select>
- *      <label for="message">Message</label>
- *      <textarea rows="5" name="message" id="f-message" placeholder="Puede preguntar lo que necesite, estaremos encantados de responderle" required=""></textarea>
- *    </fieldset>
- *    <input type="submit" value="Enviar correo">
- *  </form>
  *
  * @param array $options Opciones para la clase, incluyendo el token de seguridad y las URL permitidas para el envío de formularios.
  *
@@ -99,6 +70,13 @@ class Forms
     private $__allow_urls;
 
     /**
+     * Correo electrónico
+     *
+     * @var string
+     */
+    private $__email;
+
+    /**
      * Constructor de la clase Forms.
      *
      * @param array $options Opciones para la clase, incluyendo el token de seguridad y las URL permitidas para el envío de formularios.
@@ -109,6 +87,7 @@ class Forms
     {
         $this->token = $options['token'];
         $this->allow_urls = $options['allow_urls'];
+        $this->email = $options['email'];
     }
 
     /**
@@ -157,41 +136,17 @@ class Forms
      * @param int $wait El tiempo de espera en segundos antes de que se produzca la redirección.
      * @return void
      */
-    public function redirect($url, $st = 302, $wait = 0)
+    public function redirect($url, $st = 200, $wait = 0)
     {
         $url = (string)$url;
         $st = (int)$st;
         $msg = [301 => '301 Movido permanentemente', 302 => '302 Encontrado'];
-        if (headers_sent()) {
-            // Si las cabeceras ya han sido enviadas, se redirige con JavaScript.
-            echo "<script>document.location.href='" . $url . "';</script>\n";
-        } else {
-            // Si las cabeceras aún no se han enviado, se redirige con la cabecera "Location".
-            header('HTTP/1.1 ' . $st . ' ' . ($msg[$st] ?? '302 Found'));
-            if ($wait > 0) {sleep($wait);}
-            header("Location: {$url}");
-            exit(0);
+        header('HTTP/1.1 ' . $st . ' ' . ($msg[$st] ?? '302 Found'));
+        if ($wait > 0) {
+            sleep($wait);
         }
-    }
-
-    /**
-     * Convierte un arreglo en una cadena JSON formateada y legible para humanos, y lo resalta en sintaxis
-     * dentro de una etiqueta <pre> con la marca de inicio y fin de PHP. Útil para depuración.
-     *
-     * @param array $data El arreglo a convertir y resaltar
-     * @return string La cadena HTML formateada que contiene la sintaxis resaltada del arreglo en formato JSON
-     */
-    public function debug(array $data = []): string
-    {
-        // Convierte el arreglo en una cadena JSON formateada y legible para humanos
-        $output = json_encode($data, JSON_PRETTY_PRINT, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR);
-
-        // Resalta la sintaxis de la cadena JSON dentro de una etiqueta <pre> y agrega la marca de inicio y fin de PHP
-        $output = highlight_string('<?php' . PHP_EOL . $output . PHP_EOL . '?>', true);
-
-        // Crea la cadena HTML final para mostrar en la interfaz de usuario
-        $html = "<pre>{$output}</pre>";
-        return $html;
+        header("Location: {$url}");
+        exit(0);
     }
 
     /**
@@ -213,7 +168,7 @@ class Forms
                 $redirectError = $this->post('error_page');
                 $name = $this->post('name');
                 $from = $this->post('email_from');
-                $to = $this->post('email_to');
+                $to = $this->email;
                 $subject = $this->post('subject');
                 $options = $this->post('department');
                 $message = $this->post('message');
@@ -222,15 +177,17 @@ class Forms
                 // Envía el correo electrónico si la dirección de correo es válida, de lo contrario redirige a la página de error.
                 if (filter_var($from, FILTER_VALIDATE_EMAIL)) {
                     if (mail($to, $subject, $message_text, $headers)) {
-                        $this->redirect($redirectSuccess);
-                    } else { $this->redirect($redirectError);}
-                } else { $this->redirect($redirectError);}
-            } else {die('Lo sentimos, el correo no se ha enviado por que no tienes los permisos suficientes.');}
-        } else {die("No estás autorizado para enviar este formulario desde esta URL.");}
+                        $this->redirect($redirectSuccess . '?msg=' . urlencode('Gracias 😀, en breve contactaremos con usted.'));
+                    } else { $this->redirect($redirectError . '?msg=' . urlencode('Lo sentimos 😪, el correo no se ha enviado, vuelva a intentarlo dentro de unos minutos.'));}
+                } else { $this->redirect($redirectError . '?msg=' . urlencode('Lo sentimos 😪, el correo no se ha enviado parece no ser valido, pruebe con otro.'));}
+            } else { die('Lo sentimos 😪, el correo no se ha enviado por que no tienes los permisos suficientes.');}
+        } else { die('😪 No estás autorizado para enviar este formulario desde esta URL.');}
     }
 }
 
 $opts = [
+    // Correo electrónico al que se enviara el mensaje
+    'email' => 'demo@gmail.com',
     // Solo permite estas urls
     'allow_urls' => ['localhost'],
     // Token para comprobar como si fuera una contraseña no como un bearer token

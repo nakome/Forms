@@ -8,5 +8,9 @@
 <body style="width:min(380px,600px);margin:2rem auto">
     <h1>Lo sentimos, no hemos podido enviar el mensaje, pruebe otra vez o contacte con el administrador.</h1>
     <p><a href="/">Volver</a></p>
+    <script rel="javascript">
+      const message = new URL(location.href).searchParams.get('msg');
+      document.querySelector('h1').innerHTML = message;
+    </script>
 </body>
 </html>

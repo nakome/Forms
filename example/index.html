@@ -6,85 +6,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Form demo</title>
   <style rel="stylesheet">
-    form input,
-    form select,
-    form textarea,
-    form fieldset,
-    form optgroup,
-    form label,
-    .StripeElement {
-      font-family: inherit;
-      font-size: 100%;
-      color: inherit;
-      border: 0;
-      border-radius: 0;
-      display: block;
-      width: 100%;
-      padding: 0;
-      margin: 0;
-      -webkit-appearance: none;
-      -moz-appearance: none
-    }
+    form {
+      --input-bg-color: rgba(255, 255, 255, .9);
+      --input-border-color: rgba(17, 17, 17, 0.2);
+      --input-bg-focus-color: rgb(255, 255, 255);
+      --input-outline-color: rgb(128, 128, 128);
+      --input-danger-bg-color: rgb(54, 92, 219);
+      --input-danger-border-color: rgb(23, 35, 190);
+      --input-danger-txt-color: rgb(255, 255, 255);
 
-    form label,
-    form legend {
-      font-size: .825rem;
-      margin-bottom: .5rem
+      font-family: Roboto,-apple-system,"Segoe UI";
+      line-height: 1;
+      font-size: 14px;    
     }
-
-    form input,
-    form select,
-    form textarea,
-    .StripeElement {
-      box-sizing: border-box;
-      border: 1px solid rgba(0, 0, 0, .2);
-      background-color: rgba(255, 255, 255, .9);
-      padding: .75em 1rem;
-      margin-bottom: 1.5rem
-    }
-
-    form input:focus,
-    form select:focus,
-    form textarea:focus,
-    .StripeElement:focus {
-      background-color: #fff;
-      outline-style: solid;
-      outline-width: thin;
-      outline-color: gray;
-      outline-offset: -1px
-    }
-
-    form [type=text],
-    form [type=email],
-    .StripeElement {
-      width: 100%
-    }
-
-    form [type=button],
-    form [type=submit],
-    form [type=reset] {
-      width: auto;
-      cursor: pointer;
-      -webkit-appearance: button;
-      -moz-appearance: button;
-      appearance: button
-    }
-
-    form [type=button]:focus,
-    form [type=submit]:focus,
-    form [type=reset]:focus {
-      outline: 0
-    }
-
-    form select {
-      text-transform: none
-    }
+    form fieldset,form input,form label,form optgroup,form select,form textarea{font-family:inherit;font-size:100%;color:inherit;border:0;border-radius:0;display:block;width:100%;padding:0;margin:0;-webkit-appearance:none;-moz-appearance:none;appearance:none}
+    form label,form legend{font-size:.825rem;margin-bottom:.5rem}
+    form input,form select,form textarea{box-sizing:border-box;border:1px solid var(--input-border-color);background-color:var(--input-bg-color);padding:.75em 1rem;margin-bottom:1.5rem}
+    form input:focus,form select:focus,form textarea:focus{background-color:var(--input-bg-focus-color);outline-style:solid;outline-width:thin;outline-color:var(--input-outline-color);outline-offset:-1px}
+    form [type=email],form [type=text]{width:100%}
+    form [type=button],form [type=reset],form [type=submit]{width:auto;cursor:pointer;-webkit-appearance:button;-moz-appearance:button;appearance:button}
+    form [type=button]:is(:hover,:focus),form [type=reset]:is(:hover,:focus),form [type=submit]:is(:hover,:focus){outline:0;opacity:.5;transition:all .5s ease}
+    form select{text-transform:none}
+    [disabled]{opacity:.5}
+    .botones{display:flex}
+    .botones a.back{display:block;box-sizing:border-box;line-height:1.8;font-size:inherit;padding:.5em 1rem;border:1px solid #000;margin-bottom:1.5rem;margin-left:1rem;text-decoration:none;background-color:var(--input-danger-bg-color);border-color:var(--input-danger-border-color);color:var(--input-danger-txt-color);transition:all .5s ease;visibility:hidden;opacity:0}
+    .botones a.show{visibility:visible;opacity:1}
+    .botones a.back:is(:hover,:focus){background-color:var(--input-danger-txt-color);border-color:var(--input-danger-border-color);color:var(--input-danger-border-color);transition:all .5s ease}
   </style>
 </head>
 
 <body style="width:min(380px,600px);margin:2rem auto">
+  <div class="message"></div>
   <form action="http://localhost/Forms/" method="post">
-    <input type="hidden" name="email_to" value="demo@gmail" />
     <input type="hidden" name="token" value="demo123" />
     <input type="hidden" name="success_page" value="http://localhost/Forms/example/success.html" />
     <input type="hidden" name="error_page" value="http://localhost/Forms/example/error.html" />
@@ -106,8 +59,12 @@
       <textarea rows="5" name="message" id="f-message"
         placeholder="Puede preguntar lo que necesite, estaremos encantados de responderle" required=""></textarea>
     </fieldset>
-    <input type="submit" value="Enviar correo">
+    <div class="botones">
+      <input type="submit" value="Enviar correo">
+      <a href="/" class="back" title="Salir">Salir</a>
+    </div>
   </form>
+
   <script rel="javascript">
     // cuando el dom este listo (Esto solo funciona en desktop)
     document.onreadystatechange = () => {
@@ -135,8 +92,64 @@
       evt.target.className = "form-control";
       evt.target.setCustomValidity("");
     }
-  </script>
 
+    const form = document.querySelector('form');
+    const msg = document.querySelector('.message');
+    const backBtn = document.querySelector('.botones a');
+    // Se encarga de manejar el evento submit del formulario, prevenir su comportamiento predeterminado, 
+    // obtener los datos del formulario y llamar a la función sendFormData() con los datos del formulario.
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevenir el comportamiento predeterminado del envío de formulario
+      const formData = new FormData(form); // Obtener los datos del formulario
+      // Desactivar el formulario
+      [...form.elements].map(item => item.setAttribute('disabled', true));
+      // Insertamos clase
+      backBtn.classList.add('show');
+      // Agregar mensaje de carga
+      msg.innerHTML = '<p>Enviando correo, por favor espere...</p>';
+      sendFormData(formData);
+    });
+
+    // Sse encarga de enviar los datos del formulario al servidor y 
+    // llamar a la función handleResponse() con la respuesta del servidor.
+    async function sendFormData(formData) {
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData
+        });
+        handleResponse(response);
+      } catch (error) {
+        console.error(error);
+        // Handle error here
+      }
+    }
+
+    // Sse encarga de manejar la respuesta del servidor, verificando si hay redirección y 
+    // llamando a la función handleRedirect() si es necesario, o llamando a la función handleTextResponse() 
+    // si no hay redirección.
+    function handleResponse(response) {
+      if (response.redirected) {
+        handleRedirect(response);
+      } else {
+        handleTextResponse(response);
+      }
+    }
+
+    // Se encarga de manejar la redirección del servidor, obteniendo el mensaje 
+    // de la URL de redirección y actualizando el elemento msg con el mensaje obtenido.
+    function handleRedirect(response) {
+      const message = response.url ? new URL(response.url).searchParams.get('msg') : '';
+      msg.innerHTML = `<p>${message}</p>`;
+    }
+
+    // Se encarga de manejar la respuesta de texto del servidor,
+    // actualizando el elemento msg con el texto recibido.
+    async function handleTextResponse(response) {
+      const data = await response.text();
+      msg.innerHTML = `<p>${data}</p>`;
+    }
+  </script>
 </body>
 
 </html>
